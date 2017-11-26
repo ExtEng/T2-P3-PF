@@ -47,11 +47,11 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
         sample_theta = dist_theta(gen);
 		
 		Particle particle;
-		particle.id = i;
+		particle .id = i;
 		particle.x = sample_x;
 		particle.y = sample_y;
-		particle.theta = dist_theta;
-		particle.weight = 1init_weight;		
+		particle.theta = sample_theta;
+		particle.weight = init_weight;		
 		
 		particles.push_back(particle);
 		weights.push_back(init_weight);
@@ -194,12 +194,12 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 		
 		for (int k = 0; k < observations.size(); k++){
 			
-			double k_obsx = observations.x;
-			double k_obsy = observations.y;
+			double k_obsx = observations[k].x;
+			double k_obsy = observations[k].y;
 			
 			LandmarkObs obs_map;
 			
-			obs.id = observations.id; 
+			obs_map.id = observations[k].id; 
 			obs_map.x = i_px + (cos(i_ptheta)*k_obsx) -(sin(i_ptheta)*k_obsy);
 			obs_map.y = i_py + (sin(i_ptheta)*k_obsx) +(cos(i_ptheta)*k_obsy);
 			
@@ -214,19 +214,20 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 			int l_obsid = observations_map[l].id;
 			double l_obsx = observations_map[l].x;
 			double l_obsy = observations_map[l].y;
+			double l_predx, l_predy;
 			
 			for (int m = 0; m < predicted.size(); m++){
 				
 				if (predicted[m].id == l_obsid){
 					
-					double l_predx = predicted[m].x;
-					double l_predy = predicted[m].y;
+					l_predx = predicted[m].x;
+					l_predy = predicted[m].y;
 					
 				}
 				
 			}
 			double l_gnorm = (1/(2*M_PI*std_landmark[0]*std_landmark[1]));
-			double l_exponent = (pow(l_predx - l_obsx))/(2 * pow( std_landmark[0])) + (pow(l_predy - l_obsy))/(2 * pow( std_landmark[1]));
+			double l_exponent = (pow((l_predx - l_obsx),2))/(2 * pow( std_landmark[0],2)) + (pow((l_predy - l_obsy),2))/(2 * pow( std_landmark[1],2));
 			
 			particles[i].weight *= l_gnorm*exp(-l_exponent);
 			
